@@ -45,5 +45,4 @@ void app_main() {
 
     // If we had other things to do with the ADC, we could release it with
     // adc_oneshot_del_unit(adc1_handle);
-    // send_mqtt();
 }
