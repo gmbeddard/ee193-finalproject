@@ -17,7 +17,8 @@
 
 #define BROKER_URI "mqtt://en1-pi.eecs.tufts.edu"
 
-void app_main() {
+// void app_main() {
+void send_mqtt() {
 
     // Enable Flash (aka non-volatile storage, NVS)
     esp_err_t ret = nvs_flash_init();
