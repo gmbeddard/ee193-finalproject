@@ -53,17 +53,15 @@ void app_main()
 
         // Calculate temperature using the Steinhart-Hart equation
         float steinhart;
-        steinhart = log(thermistorResistance / R0); // ln(R/Ro)
-        steinhart /= B;                           // 1/B * ln(R/Ro)
-        steinhart += 1.0 / (25 + 273.15);         // + (1/To)
-        steinhart = 1.0 / steinhart;              // Invert
-        steinhart -= 273.15;                      // Convert to Celsius
+        steinhart = 1.0 / (A + B * log(thermistorResistance) + C * pow(log(thermistorResistance), 3)); // Convert to Kelvin
+        steinhart -= 273.15;
 
         // Print the temperature
         printf("Temperature: %f\n\t======\n", steinhart);
 
+        // mqtt_publish("temperature", steinhart);
 
-        vTaskDelay(10000 / portTICK_PERIOD_MS);
+        vTaskDelay(5000 / portTICK_PERIOD_MS); // Delay for 5 seconds
     }
 
     // If we had other things to do with the ADC, we could release it with
