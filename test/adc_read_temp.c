@@ -71,7 +71,7 @@ void app_main()
         printf("Therm Temperature: %s\n\t======\n", therm_temp);
 
 
-        vTaskDelay(5000 / portTICK_PERIOD_MS); // Delay for 5 seconds
+        vTaskDelay(5 * 60000 / portTICK_PERIOD_MS); // Delay for 5 min
     }
 
     // If we had other things to do with the ADC, we could release it with
