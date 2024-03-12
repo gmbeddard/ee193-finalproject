@@ -1,8 +1,7 @@
-#include "FreeRTOSConfig.h"
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h" // Used for timer delay
+#include "freertos/task.h"          // Used for timer delay
 #include "driver/i2c.h"
-#include "esp_log.h"
+#include "i2c_util.h"               // header for this file
 
 #define I2C_MASTER_SCL_IO 18        // GPIO number for I2C master clock
 #define I2C_MASTER_SDA_IO 19        // GPIO number for I2C master data
@@ -20,7 +19,7 @@
 #define ACK_VAL 0x0                // I2C ack value
 #define NACK_VAL 0x1               // I2C nack value
 
-static esp_err_t i2c_master_init(void)
+esp_err_t i2c_master_init(void)
 {
     int i2c_master_port = I2C_MASTER_NUM;
     i2c_config_t conf = {
@@ -37,7 +36,7 @@ static esp_err_t i2c_master_init(void)
                               I2C_MASTER_RX_BUF_DISABLE, 0);
 }
 
-static esp_err_t mcp9808_read_temperature(float *temperature)
+esp_err_t mcp9808_read_temperature(float *temperature)
 {
     uint8_t data[2];
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
@@ -54,9 +53,11 @@ static esp_err_t mcp9808_read_temperature(float *temperature)
 
     if (ret == ESP_OK)
     {
-        printf("Read temperature: 0x%02x 0x%02x\n", data[0], data[1]);
+        // printf("Read raw I2C temperature: 0x%02x 0x%02x\n", data[0], data[1]); // Debugging
+
         // Convert the data to a temperature
         int16_t temp = data[0] << 8 | data[1];
+
         // Mask off the flag bits
         temp = temp & 0x1FFF;
         if (data[0] & 0x10)
@@ -64,7 +65,7 @@ static esp_err_t mcp9808_read_temperature(float *temperature)
             temp |= 0xE000; // Set the sign bits if negative
         }
         *temperature = temp * 0.0625;
-        printf("Temperature: %.2f°C\n", *temperature);
+        printf("I2C Temperature: %.2f°C\n", *temperature);
         // ESP_LOGI("MCP9808", "Temperature: %.2f°C", temperature);
     }
     else
@@ -74,17 +75,4 @@ static esp_err_t mcp9808_read_temperature(float *temperature)
     }
 
     return ret;
-}
-
-void app_main(void)
-{
-    ESP_ERROR_CHECK(i2c_master_init());
-    ESP_LOGI("MCP9808", "I2C initialized successfully");
-
-    float temperature;
-    while (1)
-    {
-        esp_err_t result = mcp9808_read_temperature(&temperature);
-        vTaskDelay(10000 / portTICK_PERIOD_MS); // 10 second delay
-    }
 }
