@@ -60,11 +60,16 @@ void app_main()
         steinhart = 1.0 / (A + B * log(thermistorResistance) + C * pow(log(thermistorResistance), 3)); // Convert to Kelvin
         steinhart -= 273.15;
 
+        // Calculate temperature from IC temperature sensor
+        char ic_temp[10] = "0";
+
         // Print and publish the temperature
         printf("Temperature: %f\n\t======\n", steinhart);
         char therm_temp[10];
         sniprintf(therm_temp, sizeof(therm_temp), "%f", steinhart);
         mqtt_publish("czhao07/hw5/thermistor_temp", therm_temp);
+        mqtt_publish("czhao07/hw5/ic_temp", ic_temp);
+
 
         vTaskDelay(5000 / portTICK_PERIOD_MS); // Delay for 5 seconds
     }
