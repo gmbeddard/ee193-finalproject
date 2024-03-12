@@ -54,21 +54,23 @@ static esp_err_t mcp9808_read_temperature(float *temperature)
 
     if (ret == ESP_OK)
     {
-        // Convert the data
-        int16_t raw_temperature = (data[0] << 8) | data[1];
-        if (raw_temperature & 0x1000)
-        {                              // Check if negative temperature
-            raw_temperature &= 0x0FFF; // Clear sign bit
-            *temperature = -((float)raw_temperature * 0.0625);
+        printf("Read temperature: 0x%02x 0x%02x\n", data[0], data[1]);
+        // Convert the data to a temperature
+        int16_t temp = data[0] << 8 | data[1];
+        // Mask off the flag bits
+        temp = temp & 0x1FFF;
+        if (data[0] & 0x10)
+        {                   // Check if the temperature is negative
+            temp |= 0xE000; // Set the sign bits if negative
         }
-        else
-        {
-            *temperature = ((float)raw_temperature * 0.0625);
-        }
+        *temperature = temp * 0.0625;
+        printf("Temperature: %.2f°C\n", *temperature);
+        // ESP_LOGI("MCP9808", "Temperature: %.2f°C", temperature);
     }
     else
     {
-        ESP_LOGE("MCP9808", "Failed to read temperature");
+        printf("Failed to read temperature\n");
+        // ESP_LOGE("MCP9808", "Failed to read temperature");
     }
 
     return ret;
@@ -83,15 +85,6 @@ void app_main(void)
     while (1)
     {
         esp_err_t result = mcp9808_read_temperature(&temperature);
-
-        if (result == ESP_OK)
-        {
-            ESP_LOGI("MCP9808", "Temperature: %.2f°C", temperature);
-        }
-        else
-        {
-            ESP_LOGE("MCP9808", "Failed to read temperature");
-        }
         vTaskDelay(10000 / portTICK_PERIOD_MS); // 10 second delay
     }
 }
