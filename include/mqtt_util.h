@@ -2,4 +2,6 @@
 #define MQTT_UTIL_H
 
 void mqtt_init();
-void mq
+void mqtt_publish(const char* topic, const char* message);
+
+#endif

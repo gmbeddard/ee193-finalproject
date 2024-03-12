@@ -64,11 +64,11 @@ void app_main()
         char ic_temp[10] = "0";
 
         // Print and publish the temperature
-        printf("Temperature: %f\n\t======\n", steinhart);
         char therm_temp[10];
-        sniprintf(therm_temp, sizeof(therm_temp), "%f", steinhart);
+        sprintf(therm_temp, "%f", steinhart);
         mqtt_publish("czhao07/hw5/thermistor_temp", therm_temp);
         mqtt_publish("czhao07/hw5/ic_temp", ic_temp);
+        printf("Therm Temperature: %s\n\t======\n", therm_temp);
 
 
         vTaskDelay(5000 / portTICK_PERIOD_MS); // Delay for 5 seconds
