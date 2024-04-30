@@ -80,7 +80,7 @@ void app_main()
         printf("\t=====\n");
 
 
-        int minutes = 10;
+        int minutes = 30;
         vTaskDelay(minutes * 60000 / portTICK_PERIOD_MS); // Delay for some minutes
     }
 
