@@ -7,7 +7,8 @@
         "i2c.h": "c",
         "mqtt_util.h": "c",
         "adc_oneshot.h": "c",
-        "i2c_util.h": "c"
+        "i2c_util.h": "c",
+        "time.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

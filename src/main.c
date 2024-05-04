@@ -10,7 +10,9 @@
 #include "i2c_util.h"
 #include "mqtt_util.h"
 #include "esp_log.h"
-
+#include <time.h>
+#include <string.h>
+#include "lwip/apps/sntp.h"
 
 /* Pick your ADC channel here.  Channels 0-4 correspond to GPIO 0-4, and are
  * on ADC 1. ADC 2 doesn't work on ESP32-C3 due to a silicon bug, so GPIO 5
@@ -26,6 +28,18 @@ const float C = 0.6843260580e-07;
 const float R1 = 10000;     // 10k Ohm resistor, voltage divider for thermistor
 const float TH1_R0 = 100000;
 
+static const char *TAG = "Time Sync";
+
+
+void initialize_sntp(void)
+{
+    ESP_LOGI(TAG, "Initializing SNTP");
+
+    sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    sntp_setservername(0, "pool.ntp.org"); // NTP server address
+
+    sntp_init();
+}
 
 void app_main()
 {
@@ -46,10 +60,12 @@ void app_main()
     // Initialize the I2C bus and WiFi, MQTT
     ESP_ERROR_CHECK(i2c_master_init());
     mqtt_init();
+    initialize_sntp();
 
     while (1)
     {
         // Sample the ADC and save the result
+        /*
         int adc_raw;
         adc_oneshot_read(adc1_handle, ADC_CHANNEL, &adc_raw);
 
@@ -66,21 +82,50 @@ void app_main()
         char therm_temp[10];
         sprintf(therm_temp, "%f", steinhart);
         printf("Thermistor temperature: %s\n", therm_temp);
+        */
+
+        // Make full packet
+        char message[100];
 
         // Calculate temperature from IC temperature sensor
         float mcp9808_temp;
         mcp9808_read_temperature(&mcp9808_temp);
-        char ic_temp[10];
+        char ic_temp[20];
         sprintf(ic_temp, "%f", mcp9808_temp);
 
+        // Calculate epoch time
+        time_t current_time;
+        char ascii_epoch_time[20]; // Assuming 20 characters is enough for the ASCII representation
+        // current_time = time(&current_time);
+        time(&current_time);
+        sprintf(ascii_epoch_time, "%ld", (long)current_time); // Convert the Epoch time to ASCII string
+        
+        // fprintf(stdout, "Time: %u\n", (unsigned)time(NULL));
+        printf(ascii_epoch_time);
+
+        // Calculate battery
+        int count = 100;
+        char batt[10];
+        sprintf(batt, "%d %%", count);
+        count = count - 1;
+
+        // Put it all together
+        strcpy(message, ascii_epoch_time);
+        strcat(message, ",");
+        strcat(message, ic_temp);
+        strcat(message, ",");
+        strcat(message, batt);
+        printf("\n\t=====\n");
+        printf(message);
+
         // Print and publish the temperature, disconnect and clean up
-        mqtt_publish("czhao07/hw5/thermistor_temp", therm_temp, MQTT_INIT);
+        // mqtt_publish("teamF/node1/tempupdate", message, MQTT_INIT);
         // mqtt_publish("czhao07/hw5/test", "test_publish", MQTT_PUBLISH);
-        mqtt_publish("czhao07/hw5/ic_temp", ic_temp, MQTT_END);
-        printf("\t=====\n");
+        // mqtt_publish("czhao07/hw5/ic_temp", ic_temp, MQTT_END);
+        printf("\n\t=====\n");
 
 
-        int minutes = 10;
+        int minutes = 1;
         vTaskDelay(minutes * 60000 / portTICK_PERIOD_MS); // Delay for some minutes
     }
 
