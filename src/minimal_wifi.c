@@ -13,6 +13,7 @@
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
+#include "minimal_wifi.h"  // header for this file
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -102,7 +103,7 @@ void wifi_connect(const char* ssid, const char* pass)
     };
     strncpy((char*)wifi_config.sta.ssid, ssid, sizeof(wifi_config.sta.ssid) / sizeof(uint8_t));
     strncpy((char*)wifi_config.sta.password, pass, sizeof(wifi_config.sta.password) / sizeof(uint8_t));
-   
+
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
     ESP_ERROR_CHECK(esp_wifi_start() );
