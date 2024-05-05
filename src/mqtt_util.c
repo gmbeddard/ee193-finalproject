@@ -13,8 +13,8 @@
 #include "minimal_wifi.h"
 #include "mqtt_util.h"      // header for this file
 
-#define WIFI_SSID      "Verizon_RKXL77-2.4"
-#define WIFI_PASS      "extant3-ewe-eon"
+#define WIFI_SSID      "Tufts_Wireless"
+#define WIFI_PASS      ""
 
 #define BROKER_URI "mqtt://en1-pi.eecs.tufts.edu"
 
