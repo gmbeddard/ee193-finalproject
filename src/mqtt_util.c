@@ -5,6 +5,8 @@
 // See also the example code, which demonstrates how to receive messages:
 // https://github.com/espressif/esp-idf/blob/5f4249357372f209fdd57288265741aaba21a2b1/examples/protocols/mqtt/tcp/main/app_main.c
 
+#include <stdio.h>
+#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h" // Used for timer delay
 #include "nvs_flash.h"
@@ -17,6 +19,10 @@
 #define WIFI_PASS      ""
 
 #define BROKER_URI "mqtt://en1-pi.eecs.tufts.edu"
+
+// Define topics for subscription and publishing
+#define SUBSCRIBE_TOPIC "time"
+#define PUBLISH_TOPIC   "time"
 
 // Initialize the MQTT client
 esp_mqtt_client_handle_t client;

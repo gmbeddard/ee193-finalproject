@@ -13,11 +13,15 @@
 #include <time.h>
 #include <string.h>
 #include "lwip/apps/sntp.h"
+#include "esp_sleep.h"
+
+#define MQTT_SUBSCRIBE_TOPIC = "time";
+
 
 /* Pick your ADC channel here.  Channels 0-4 correspond to GPIO 0-4, and are
  * on ADC 1. ADC 2 doesn't work on ESP32-C3 due to a silicon bug, so GPIO 5
  * isn't available. */
-#define ADC_CHANNEL ADC_CHANNEL_0
+//#define ADC_CHANNEL ADC_CHANNEL_0
 
 // Steinhart-Hart Coefficients for the NTC thermistor
 // Replace these with the correct values for your specific thermistor
@@ -43,7 +47,7 @@ void initialize_sntp(void)
 
 void app_main()
 {
-    // Configure the ADC
+    /*// Configure the ADC
     adc_oneshot_unit_init_cfg_t adc1_init_cfg = {
         .unit_id = ADC_UNIT_1};
     adc_oneshot_unit_handle_t adc1_handle;
@@ -56,11 +60,12 @@ void app_main()
 
     adc_oneshot_config_channel(adc1_handle, ADC_CHANNEL, &adc1_cfg);
     // Skip calibration setup for now
+    */
 
     // Initialize the I2C bus and WiFi, MQTT
     ESP_ERROR_CHECK(i2c_master_init());
     mqtt_init();
-    initialize_sntp();
+    //initialize_sntp();
 
     while (1)
     {
@@ -88,8 +93,8 @@ void app_main()
         char message[100];
 
         // Calculate temperature from IC temperature sensor
-        float mcp9808_temp;
-        mcp9808_read_temperature(&mcp9808_temp);
+        float mcp9808_temp = 14.5;
+        //mcp9808_read_temperature(&mcp9808_temp);
         char ic_temp[20];
         sprintf(ic_temp, "%f", mcp9808_temp);
 
@@ -119,14 +124,19 @@ void app_main()
         printf(message);
 
         // Print and publish the temperature, disconnect and clean up
-        // mqtt_publish("teamF/node1/tempupdate", message, MQTT_INIT);
-        // mqtt_publish("czhao07/hw5/test", "test_publish", MQTT_PUBLISH);
+        mqtt_publish("teamF/node1/tempupdate", message, MQTT_INIT);
+        mqtt_publish("czhao07/hw5/new_test", "test_publish", MQTT_INIT);
         // mqtt_publish("czhao07/hw5/ic_temp", ic_temp, MQTT_END);
         printf("\n\t=====\n");
 
 
         int minutes = 1;
-        vTaskDelay(minutes * 60000 / portTICK_PERIOD_MS); // Delay for some minutes
+        vTaskDelay(minutes * 1000 / portTICK_PERIOD_MS); // Delay for some minutes
+
+        //esp_sleep_enable_timer_wakeup(3600 * 1000000); // 1 hour in microseconds
+        esp_sleep_enable_timer_wakeup(60 * 1000000); // 1 hour in microseconds
+        printf("Going into deep sleep for 1 hour...\n");
+        esp_deep_sleep_start();
     }
 
     // If we had other things to do with the ADC, we could release it with
