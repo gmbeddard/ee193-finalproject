@@ -31,63 +31,18 @@ const float C = 0.6843260580e-07;
 
 const float R1 = 10000;     // 10k Ohm resistor, voltage divider for thermistor
 const float TH1_R0 = 100000;
+char ascii_epoch_time[20] = "1700000000"; // to store the epoch time
 
-static const char *TAG = "Time Sync";
-
-
-void initialize_sntp(void)
-{
-    ESP_LOGI(TAG, "Initializing SNTP");
-
-    sntp_setoperatingmode(SNTP_OPMODE_POLL);
-    sntp_setservername(0, "pool.ntp.org"); // NTP server address
-
-    sntp_init();
-}
 
 void app_main()
 {
-    /*// Configure the ADC
-    adc_oneshot_unit_init_cfg_t adc1_init_cfg = {
-        .unit_id = ADC_UNIT_1};
-    adc_oneshot_unit_handle_t adc1_handle;
-    adc_oneshot_new_unit(&adc1_init_cfg, &adc1_handle);
-
-    // Configure the channel within the ADC
-    adc_oneshot_chan_cfg_t adc1_cfg = {
-        .bitwidth = ADC_BITWIDTH_DEFAULT, // Default is 12 bits (max)
-        .atten = ADC_ATTEN_DB_11};
-
-    adc_oneshot_config_channel(adc1_handle, ADC_CHANNEL, &adc1_cfg);
-    // Skip calibration setup for now
-    */
-
     // Initialize the I2C bus and WiFi, MQTT
     ESP_ERROR_CHECK(i2c_master_init());
     mqtt_init();
-    //initialize_sntp();
 
     while (1)
-    {
-        // Sample the ADC and save the result
-        /*
-        int adc_raw;
-        adc_oneshot_read(adc1_handle, ADC_CHANNEL, &adc_raw);
-
-        // Measure temperature from the thermistor voltage (Steinhart-Hart equation)
-        // NOTE: here voltage over the divider resistor
-        float voltage = adc_raw * 3.3 / 4095;
-        float thermistorResistance = (3.3 * R1 / voltage) - R1;
-        // printf("Thermistor resistance: %f\n", thermistorResistance); // Debugging
-
-        // Calculate temperature using the Steinhart-Hart equation
-        float steinhart;
-        steinhart = 1.0 / (A + B * log(thermistorResistance) + C * pow(log(thermistorResistance), 3)); // Convert to Kelvin
-        steinhart -= 273.15;
-        char therm_temp[10];
-        sprintf(therm_temp, "%f", steinhart);
-        printf("Thermistor temperature: %s\n", therm_temp);
-        */
+    {  
+        mqtt_app_start(); // starting time subscriber client
 
         // Make full packet
         char message[100];
@@ -99,11 +54,11 @@ void app_main()
         sprintf(ic_temp, "%f", mcp9808_temp);
 
         // Calculate epoch time
-        time_t current_time;
-        char ascii_epoch_time[20]; // Assuming 20 characters is enough for the ASCII representation
-        // current_time = time(&current_time);
-        time(&current_time);
-        sprintf(ascii_epoch_time, "%ld", (long)current_time); // Convert the Epoch time to ASCII string
+        // time_t current_time;
+        // Assuming 20 characters is enough for the ASCII representation
+        // sprintf(ascii_epoch_time, "%ld", (long)current_time); // Convert the Epoch time to ASCII string
+        // int ret = sscanf(data, "%ld", &ascii_epoch_time); 
+        strcpy(ascii_epoch_time, "1700000000");
         
         // fprintf(stdout, "Time: %u\n", (unsigned)time(NULL));
         printf(ascii_epoch_time);
@@ -138,7 +93,4 @@ void app_main()
         printf("Going into deep sleep for 1 hour...\n");
         esp_deep_sleep_start();
     }
-
-    // If we had other things to do with the ADC, we could release it with
-    // adc_oneshot_del_unit(adc1_handle);
 }
