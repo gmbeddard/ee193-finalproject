@@ -20,6 +20,8 @@
 // for time topic
 char ascii_epoch_time[20]; // to store the epoch time
 bool time_received;
+RTC_DATA_ATTR double battery_val = 100.0;
+
 
 void app_main()
 {
@@ -27,6 +29,7 @@ void app_main()
     strcpy(ascii_epoch_time, "1700000000"); // default place holder
     ESP_ERROR_CHECK(i2c_master_init());
     mqtt_init();
+
 
     while (1)
     {  
@@ -49,10 +52,14 @@ void app_main()
         }
         
         // Calculate battery
-        int count = 100;
+        // Seed the random number generator
+        srand(time(NULL));
+        int random_int = rand();
+        double consumptn = (double)random_int / RAND_MAX * 0.5 - 0.5;  // [-0.5, 0]
         char batt[10];
-        sprintf(batt, "%d %%", count);
-        count = count - 1;
+        printf("Doing decrement: %lf - %lf = %lf\n", battery_val, consumptn, battery_val+consumptn);
+        battery_val += consumptn;
+        sprintf(batt, "%0.2f %%", battery_val);
 
         // Put it all together
         strcpy(message, ascii_epoch_time);
