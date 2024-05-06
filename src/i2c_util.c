@@ -3,14 +3,14 @@
 #include "driver/i2c.h"
 #include "i2c_util.h"               // header for this file
 
-#define I2C_MASTER_SCL_IO 18        // GPIO number for I2C master clock
-#define I2C_MASTER_SDA_IO 19        // GPIO number for I2C master data
+#define I2C_MASTER_SCL_IO 6       // GPIO number for I2C master clock
+#define I2C_MASTER_SDA_IO 7        // GPIO number for I2C master data
 #define I2C_MASTER_NUM I2C_NUM_0    // I2C port number
 #define I2C_MASTER_FREQ_HZ 100000   // I2C master clock frequency
 #define I2C_MASTER_TX_BUF_DISABLE 0 // I2C master does not need buffer
 #define I2C_MASTER_RX_BUF_DISABLE 0 // I2C master does not need buffer
 
-#define SENSOR_ADDR 0x18           // sensor's I2C address
+#define SENSOR_ADDR 0x37           // sensor's I2C address
 #define SENSOR_READ_REG 0x05       // the register to read from
 #define WRITE_BIT I2C_MASTER_WRITE // I2C master write
 #define READ_BIT I2C_MASTER_READ   // I2C master read
@@ -53,7 +53,8 @@ esp_err_t mcp9808_read_temperature(float *temperature)
 
     if (ret == ESP_OK)
     {
-        // printf("Read raw I2C temperature: 0x%02x 0x%02x\n", data[0], data[1]); // Debugging
+        printf("Attempting I2C");
+        printf("Read raw I2C temperature: 0x%02x 0x%02x\n", data[0], data[1]); // Debugging
 
         // Convert the data to a temperature
         int16_t temp = data[0] << 8 | data[1];
@@ -64,7 +65,7 @@ esp_err_t mcp9808_read_temperature(float *temperature)
         {                   // Check if the temperature is negative
             temp |= 0xE000; // Set the sign bits if negative
         }
-        *temperature = temp * 0.0625;
+        *temperature = temp * 0.125;
         printf("I2C Temperature: %.2f°C\n", *temperature);
         // ESP_LOGI("MCP9808", "Temperature: %.2f°C", temperature);
     }
