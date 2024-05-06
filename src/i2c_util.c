@@ -3,8 +3,8 @@
 #include "driver/i2c.h"
 #include "i2c_util.h"               // header for this file
 
-#define I2C_MASTER_SCL_IO 6       // GPIO number for I2C master clock
-#define I2C_MASTER_SDA_IO 7        // GPIO number for I2C master data
+#define I2C_MASTER_SCL_IO 7       // GPIO number for I2C master clock
+#define I2C_MASTER_SDA_IO 8        // GPIO number for I2C master data
 #define I2C_MASTER_NUM I2C_NUM_0    // I2C port number
 #define I2C_MASTER_FREQ_HZ 100000   // I2C master clock frequency
 #define I2C_MASTER_TX_BUF_DISABLE 0 // I2C master does not need buffer

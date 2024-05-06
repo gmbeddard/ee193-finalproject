@@ -40,8 +40,8 @@ void app_main()
         char message[50];
 
         // Calculate temperature from IC temperature sensor
-        float mcp9808_temp = 14.5;
-        // mcp9808_read_temperature(&mcp9808_temp);
+        float mcp9808_temp;// = 14.5;
+        mcp9808_read_temperature(&mcp9808_temp);
         char ic_temp[20];
         sprintf(ic_temp, "%f", mcp9808_temp);
 
