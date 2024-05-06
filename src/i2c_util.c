@@ -39,6 +39,11 @@ esp_err_t i2c_master_init(void)
 
 esp_err_t mcp9808_read_temperature(float *temperature)
 {
+    // Set IO4 high to power temp IC
+    esp_rom_gpio_pad_select_gpio(GPIO_OUTPUT_IO_4);
+    gpio_set_direction(GPIO_OUTPUT_IO_4, GPIO_MODE_OUTPUT);
+    gpio_set_level(GPIO_OUTPUT_IO_4, 1);
+
     uint8_t data[2];
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
@@ -52,28 +57,23 @@ esp_err_t mcp9808_read_temperature(float *temperature)
     esp_err_t ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
 
-    // Set IO4 high to power temp IC
-    esp_rom_gpio_pad_select_gpio(GPIO_OUTPUT_IO_4);
-    gpio_set_direction(GPIO_OUTPUT_IO_4, GPIO_MODE_OUTPUT);
-    gpio_set_level(GPIO_OUTPUT_IO_4, 1);
+    // printf("Attempting I2C");
+    //     printf("Read raw I2C temperature: 0x%02x 0x%02x\n", data[0], data[1]); // Debugging
 
-    printf("Attempting I2C");
-        printf("Read raw I2C temperature: 0x%02x 0x%02x\n", data[0], data[1]); // Debugging
+    //     // Convert the data to a temperature
+    //     int16_t temp = data[0] << 8 | data[1];
 
-        // Convert the data to a temperature
-        int16_t temp = data[0] << 8 | data[1];
+    //     // Mask off the flag bits
+    //     temp = temp & 0x1FFF;
+    //     if (data[0] & 0x10)
+    //     {                   // Check if the temperature is negative
+    //         temp |= 0xE000; // Set the sign bits if negative
+    //     }
+    //     *temperature = temp * 0.125;
+    //     printf("I2C Temperature: %.2f°C\n", *temperature);
+    //     // ESP_LOGI("MCP9808", "Temperature: %.2f°C", temperature);
 
-        // Mask off the flag bits
-        temp = temp & 0x1FFF;
-        if (data[0] & 0x10)
-        {                   // Check if the temperature is negative
-            temp |= 0xE000; // Set the sign bits if negative
-        }
-        *temperature = temp * 0.125;
-        printf("I2C Temperature: %.2f°C\n", *temperature);
-        // ESP_LOGI("MCP9808", "Temperature: %.2f°C", temperature);
 
-/*
     if (ret == ESP_OK)
     {
         printf("Attempting I2C");
@@ -96,7 +96,7 @@ esp_err_t mcp9808_read_temperature(float *temperature)
     {
         printf("Failed to read temperature\n");
         // ESP_LOGE("MCP9808", "Failed to read temperature");
-    }*/
+    }
 
     return ret;
 }
