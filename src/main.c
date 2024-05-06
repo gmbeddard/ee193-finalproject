@@ -17,52 +17,37 @@
 
 #define MQTT_SUBSCRIBE_TOPIC = "time";
 
-
-/* Pick your ADC channel here.  Channels 0-4 correspond to GPIO 0-4, and are
- * on ADC 1. ADC 2 doesn't work on ESP32-C3 due to a silicon bug, so GPIO 5
- * isn't available. */
-//#define ADC_CHANNEL ADC_CHANNEL_0
-
-// Steinhart-Hart Coefficients for the NTC thermistor
-// Replace these with the correct values for your specific thermistor
-const float A = 0.8026065509e-03;
-const float B = 2.125420791e-04;
-const float C = 0.6843260580e-07;
-
-const float R1 = 10000;     // 10k Ohm resistor, voltage divider for thermistor
-const float TH1_R0 = 100000;
-char ascii_epoch_time[20] = "1700000000"; // to store the epoch time
-
+// for time topic
+char ascii_epoch_time[20]; // to store the epoch time
+bool time_received;
 
 void app_main()
 {
     // Initialize the I2C bus and WiFi, MQTT
+    strcpy(ascii_epoch_time, "1700000000"); // default place holder
     ESP_ERROR_CHECK(i2c_master_init());
     mqtt_init();
 
     while (1)
     {  
+        time_received=false;
         mqtt_app_start(); // starting time subscriber client
 
         // Make full packet
-        char message[100];
+        char message[50];
 
         // Calculate temperature from IC temperature sensor
         float mcp9808_temp = 14.5;
-        //mcp9808_read_temperature(&mcp9808_temp);
+        // mcp9808_read_temperature(&mcp9808_temp);
         char ic_temp[20];
         sprintf(ic_temp, "%f", mcp9808_temp);
 
-        // Calculate epoch time
-        // time_t current_time;
-        // Assuming 20 characters is enough for the ASCII representation
-        // sprintf(ascii_epoch_time, "%ld", (long)current_time); // Convert the Epoch time to ASCII string
-        // int ret = sscanf(data, "%ld", &ascii_epoch_time); 
-        strcpy(ascii_epoch_time, "1700000000");
+        // Wait for epoch time retrieve -- by the MQTT event handler callback
+        while (!time_received)
+        {
+            // printf("loop -- no time yet");
+        }
         
-        // fprintf(stdout, "Time: %u\n", (unsigned)time(NULL));
-        printf(ascii_epoch_time);
-
         // Calculate battery
         int count = 100;
         char batt[10];
@@ -80,8 +65,7 @@ void app_main()
 
         // Print and publish the temperature, disconnect and clean up
         mqtt_publish("teamF/node1/tempupdate", message, MQTT_INIT);
-        mqtt_publish("czhao07/hw5/new_test", "test_publish", MQTT_INIT);
-        // mqtt_publish("czhao07/hw5/ic_temp", ic_temp, MQTT_END);
+        // mqtt_publish("czhao07/hw5/new_test", "test_publish", MQTT_END); // for MQTT test
         printf("\n\t=====\n");
 
 

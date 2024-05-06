@@ -23,25 +23,17 @@
 #define BROKER_URI "mqtt://en1-pi.eecs.tufts.edu"
 #define SUBSCRIBE_TOPIC "time"
 
+extern char ascii_epoch_time[20]; // to store the epoch time
+extern bool time_received;
 
 // Initialize the MQTT client
 esp_mqtt_client_handle_t client;
 
-void process_received_message(const char *data, int data_len)
+static esp_event_handler_t mqtt_event_handler_cb(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
 {
-    // Process the received message containing time information
-    // Example: Parse the message and extract time data
-    // Time data could be in a specific format, such as Unix Epoch time or a formatted timestamp
-    // You can use sscanf, strtok, or any parsing method suitable for your message format
-    // Example parsing:
-    long int received_time;
-    sscanf(data, "%ld", &received_time); // Assuming the message contains a long integer representing time
-    ESP_LOGI("MQTT", "Received time: %ld", received_time);
-}
-
-static esp_event_handler_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
-{
-    switch (event->event_id) {
+    printf("inside event handler!\n");
+    esp_mqtt_event_handle_t event = event_data;
+    switch ((esp_mqtt_event_id_t)event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI("MQTT", "Connected to broker");
             esp_mqtt_client_subscribe(event->client, SUBSCRIBE_TOPIC, 0);
@@ -52,7 +44,9 @@ static esp_event_handler_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
         case MQTT_EVENT_DATA:
             ESP_LOGI("MQTT", "Received message: %.*s", event->data_len, event->data);
             // Process the received message containing time information
-            // process_received_message(event->data, event->data_len);
+            strncpy(ascii_epoch_time, event->data, event->data_len);
+            ESP_LOGI("MQTT", "Received ASCII time: %s", ascii_epoch_time);
+            time_received = true;
             break;
         default:
             break;
@@ -68,9 +62,9 @@ void mqtt_app_start(void)
         };
 
     esp_mqtt_client_handle_t mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
-    esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, mqtt_event_handler_cb, mqtt_client);
+    esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, mqtt_event_handler_cb, NULL);
     ESP_ERROR_CHECK(esp_mqtt_client_start(mqtt_client));
-    printf("starting the subscriber");
+    printf("starting the time subscriber!\n");
 }
 
 void mqtt_init()
