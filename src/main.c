@@ -60,7 +60,7 @@ void app_main()
         char batt[10];
         printf("Doing decrement: %lf - %lf = %lf\n", battery_val, consumptn, battery_val+consumptn);
         battery_val += consumptn;
-        sprintf(batt, "%0.2f %%", battery_val);
+        sprintf(batt, "%0.2f", battery_val);
 
         // Put it all together
         strcpy(message, ascii_epoch_time);
@@ -81,7 +81,7 @@ void app_main()
         vTaskDelay(minutes * 1000 / portTICK_PERIOD_MS); // Delay for some minutes
 
         //esp_sleep_enable_timer_wakeup(3600 * 1000000); // 1 hour in microseconds
-        esp_sleep_enable_timer_wakeup(60 * 1000000); // 1 hour in microseconds
+        esp_sleep_enable_timer_wakeup(30 * 1000000); // 1 hour in microseconds
         printf("Going into deep sleep for 1 hour...\n");
         esp_deep_sleep_start();
     }
