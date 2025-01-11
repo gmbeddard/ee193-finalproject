@@ -2,8 +2,8 @@
 Writeup: https://www.notion.so/lindazhao/Team-Fire-Nation-Final-Report-dc0f7105e2b34866ada27040306ecb55?pvs=4 
 
 ## Schematics & BOM: 
-Schematics Zip Folder (KiCAD project file): https://drive.google.com/file/d/1rzjhcRprmjvbViDM0Jm00A539Co3ytU3/view?usp=sharing 
-BOM: https://docs.google.com/spreadsheets/d/19IVyPjfXpfomtAPkblObAk700TYVvV6gad1exjRFkIU/edit?usp=sharing 
+*Schematics Zip Folder (KiCAD project file): https://drive.google.com/file/d/1rzjhcRprmjvbViDM0Jm00A539Co3ytU3/view?usp=sharing 
+*BOM: https://docs.google.com/spreadsheets/d/19IVyPjfXpfomtAPkblObAk700TYVvV6gad1exjRFkIU/edit?usp=sharing 
 
 ## GitHub: 
 ESP-IDF Code: see code under `main.`
