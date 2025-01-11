@@ -19,12 +19,7 @@ This project, developed as part of an advanced embedded systems course at Tufts 
 - **Dashboard**: A custom-built web interface for real-time data visualization and analysis.
 
 #### Deployment
-Three nodes were deployed across the Tufts Medford/Somerville campus:
-1. Near the Joyce Cummings Center (JCC).
-2. By Bromfield-Pearson, close to the SEC.
-3. Near Robinson Hall under a bush at the Dearborn Rd. and College Ave. intersection.
-
-These 3 nodes were operational from May 2024 to January 2025. Unfortunately, as of January 2025, they have been removed by Tufts and are no longer operational. 
+Three nodes were deployed across the Tufts Medford/Somerville campus. These 3 nodes were operational from May 2024 to January 2025. Unfortunately, as of January 2025, they have been removed by Tufts and are no longer operational. 
 
 #### Lessons Learned & Future Improvements
 - **Lessons Learned**: 
@@ -36,7 +31,7 @@ These 3 nodes were operational from May 2024 to January 2025. Unfortunately, as 
 
 #### Repository Content & Helpful Links
 - **Writeup**: For a detailed writeup of this project, including pictures of our KiCAD schematics and snippets of code, visit this link: https://www.notion.so/lindazhao/Team-Fire-Nation-Final-Report-dc0f7105e2b34866ada27040306ecb55?pvs=4.
-- **Schematics and PCB Layouts**: Available in the `electronics` folder. A KiCAD zip folder of everything can be found here: https://drive.google.com/file/d/1rzjhcRprmjvbViDM0Jm00A539Co3ytU3/view?usp=sharing.
+- **Schematics and PCB Layouts**: A KiCAD zip folder of everything can be found here: https://drive.google.com/file/d/1rzjhcRprmjvbViDM0Jm00A539Co3ytU3/view?usp=sharing.
 - **BOM**: We were the only team who managed to get within $5 of the goal cost of $15. Our BOM can be found at this link: https://docs.google.com/spreadsheets/d/19IVyPjfXpfomtAPkblObAk700TYVvV6gad1exjRFkIU/edit?usp=sharing.
 - **Code**: Source code for ESP32 nodes, including MQTT and WiFi functionalities, can be found in the `src` directory in our `main` branch.
 - **Arduino Test Code**: We had trouble implementing our project with the espressidf code at first, so we tested functionality of our hardware and simulated a working sensor with the Arduino code found at this link: https://github.com/gmbeddard/TeamF_Final_Arduino.
