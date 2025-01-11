@@ -5,6 +5,8 @@
 // See also the example code, which demonstrates how to receive messages:
 // https://github.com/espressif/esp-idf/blob/5f4249357372f209fdd57288265741aaba21a2b1/examples/protocols/mqtt/tcp/main/app_main.c
 
+#include <stdio.h>
+#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h" // Used for timer delay
 #include "nvs_flash.h"
@@ -12,16 +14,61 @@
 #include "mqtt_client.h"
 #include "minimal_wifi.h"
 #include "mqtt_util.h"      // header for this file
+#include "esp_log.h"
+
 
 #define WIFI_SSID      "Tufts_Wireless"
 #define WIFI_PASS      ""
 
 #define BROKER_URI "mqtt://en1-pi.eecs.tufts.edu"
+#define SUBSCRIBE_TOPIC "time"
+
+extern char ascii_epoch_time[20]; // to store the epoch time
+extern bool time_received;
 
 // Initialize the MQTT client
 esp_mqtt_client_handle_t client;
 
+static esp_event_handler_t mqtt_event_handler_cb(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
+{
+    printf("inside event handler!\n");
+    esp_mqtt_event_handle_t event = event_data;
+    switch ((esp_mqtt_event_id_t)event_id) {
+        case MQTT_EVENT_CONNECTED:
+            ESP_LOGI("MQTT", "Connected to broker");
+            esp_mqtt_client_subscribe(event->client, SUBSCRIBE_TOPIC, 0);
+            break;
+        case MQTT_EVENT_DISCONNECTED:
+            ESP_LOGI("MQTT", "Disconnected from broker");
+            break;
+        case MQTT_EVENT_DATA:
+            ESP_LOGI("MQTT", "Received message: %.*s", event->data_len, event->data);
+            // Process the received message containing time information
+            strncpy(ascii_epoch_time, event->data, event->data_len);
+            ESP_LOGI("MQTT", "Received ASCII time: %s", ascii_epoch_time);
+            time_received = true;
+            break;
+        default:
+            break;
+    }
+    return ESP_OK;
+}
+
+
+void mqtt_app_start(void)
+{
+    esp_mqtt_client_config_t mqtt_cfg = {
+            .broker.address.uri = BROKER_URI,
+        };
+
+    esp_mqtt_client_handle_t mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
+    esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, mqtt_event_handler_cb, NULL);
+    ESP_ERROR_CHECK(esp_mqtt_client_start(mqtt_client));
+    printf("starting the time subscriber!\n");
+}
+
 void mqtt_init()
+/* initialization for the whole MQTT system -- nvs, wifi, etc. */
 {
     // Enable Flash (aka non-volatile storage, NVS)
     esp_err_t ret = nvs_flash_init();
@@ -65,3 +112,4 @@ void mqtt_publish(const char* topic, const char* message, mqtt_cmd cmd)
     }
     printf("Message sent to topic %s!\n", topic);
 }
+
