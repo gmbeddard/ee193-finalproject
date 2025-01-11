@@ -1,7 +1,5 @@
 ### EE193 Networked Embedded Systems Final Project: Campus-Wide Wireless Temperature Monitoring Network
 
-![alt text](https://drive.google.com/file/d/18P2vYrogZqLkyt6rSo3LgDiki7a1IxNz/view?usp=drive_link)
-
 #### Project Overview
 This project, developed as part of an advanced embedded systems course at Tufts University, focuses on designing and deploying a wireless network of temperature monitoring probes across campus. The network collects and transmits ambient temperature data in real-time, supporting environmental and facility management efforts. Key project highlights include scalability, low-cost design, and robust performance in varying environmental conditions.
 
