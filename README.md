@@ -39,9 +39,6 @@ Three nodes were deployed across the Tufts Medford/Somerville campus. These 3 no
 - **Programming/Debugger Boards**: We primarily used the Digikey ESP Programmer Board, found at this link: https://www.digikey.com/en/products/detail/espressif-systems/ESP-PROG/10259352?utm_adgroup=&utm_source=google&utm_medium=cpc&utm_campaign=PMax.
 
 #### Authors
-I'd like to thank my lovely teammates on Team Fire Nation: Emily Stanisha (@estanisha) and Chuyi (Linda) Zhao (@lindazha0). Together, we were one of the only teams in EE193 to get all 3 sensors working and recording data. The following is a breakdown of our roles:
-- **Gabby**: coordinated team meetings, helped with hardware design, generated and tested Arduino test code on 3/3 of our sensors, soldered and put together 2/3 boards, in charge of the final implementation/resting place of each of the boards.
-- **Emily**: also helped in hardware design, put together 1/3 boards, did PCB layout. 
-- **Linda**: programmed our dashboard and the majority of the espressidf code.
+I'd like to thank my lovely teammates on Team Fire Nation: Emily Stanisha (@estanisha) and Chuyi (Linda) Zhao (@lindazha0). Together, we were one of the only teams in EE193 to get all 3 sensors working and recording data. 
 
 Thanks for reading!
